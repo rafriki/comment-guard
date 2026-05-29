@@ -1,0 +1,15 @@
+{
+  "name": "linkedin-comment-guard",
+  "version": "0.1.0",
+  "description": "Chrome (MV3) extension that watches your LinkedIn posts and flags/removes low-effort AI-spam comments and repeat offenders. Runs in your own browser session — no scraping bot, no credentials. Review-then-delete or auto-delete (toggleable).",
+  "type": "module",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "icons": "node tools/make-icons.mjs",
+    "zip": "node tools/zip.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

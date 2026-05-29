@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Comment Guard — Settings</title>
+    <style>
+      :root { --line:#e5e7eb; --muted:#6b7280; --blue:#0a66c2; }
+      * { box-sizing: border-box; }
+      body {
+        font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #1f2328; max-width: 720px; margin: 0 auto; padding: 24px; font-size: 14px;
+      }
+      h1 { font-size: 20px; display: flex; align-items: center; gap: 10px; }
+      h1 img { width: 28px; height: 28px; }
+      fieldset { border: 1px solid var(--line); border-radius: 10px; margin: 16px 0; padding: 16px; }
+      legend { font-weight: 700; padding: 0 6px; }
+      .field { margin: 12px 0; }
+      label.lbl { font-weight: 600; display: block; margin-bottom: 4px; }
+      .hint { color: var(--muted); font-size: 12px; margin-top: 4px; }
+      input[type="text"], input[type="password"], input[type="number"], select, textarea {
+        width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; font: inherit;
+      }
+      textarea { min-height: 70px; resize: vertical; }
+      .row { display: flex; gap: 16px; align-items: center; }
+      .row > * { flex: 1; }
+      input[type="range"] { width: 100%; }
+      .pill { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: #eef2ff; color: #3730a3; }
+      .pill.ok { background:#dcfce7; color:#166534; } .pill.warn{background:#fef3c7;color:#92400e;} .pill.bad{background:#fee2e2;color:#991b1b;}
+      button { font: inherit; cursor: pointer; border-radius: 8px; padding: 9px 16px; border: 1px solid var(--line); background: #fff; }
+      button.primary { background: var(--blue); color: #fff; border-color: var(--blue); font-weight: 600; }
+      button.danger { color: #b91c1c; border-color: #f3c0c0; }
+      .saved { color: #137333; font-weight: 600; margin-left: 12px; opacity: 0; transition: opacity .2s; }
+      .saved.show { opacity: 1; }
+      .inline { display: flex; align-items: center; gap: 10px; }
+      table { width: 100%; border-collapse: collapse; font-size: 12px; }
+      th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      .tag { font-size: 11px; padding: 1px 6px; border-radius: 4px; background:#f1f5f9; }
+      .tag.del { background:#fee2e2; color:#991b1b; } .tag.flag{background:#fef3c7;color:#92400e;} .tag.keep{background:#dcfce7;color:#166534;}
+    </style>
+  </head>
+  <body>
+    <h1><img src="../icons/icon48.png" alt="" /> LinkedIn Comment Guard — Settings</h1>
+
+    <fieldset>
+      <legend>General</legend>
+      <div class="field inline">
+        <input type="checkbox" id="enabled" />
+        <label class="lbl" for="enabled" style="margin:0">Extension enabled</label>
+      </div>
+      <div class="field">
+        <label class="lbl" for="myNameOverride">Your name on LinkedIn (optional)</label>
+        <input type="text" id="myNameOverride" placeholder="Auto-detected — only set this if detection is wrong" />
+        <div class="hint">Used to identify which posts are yours. Leave blank to auto-detect from the nav avatar.</div>
+      </div>
+      <div class="field">
+        <label class="lbl" for="scanIntervalMinutes">Re-scan open LinkedIn tabs every (minutes)</label>
+        <input type="number" id="scanIntervalMinutes" min="1" max="120" />
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Classifier</legend>
+      <div class="field">
+        <label class="lbl" for="classifier">Backend</label>
+        <select id="classifier">
+          <option value="builtin">Chrome built-in AI (Gemini Nano) — on-device, free, private</option>
+          <option value="heuristic">Heuristics only — no model, fastest</option>
+        </select>
+        <div class="hint">On-device status: <span class="pill" id="builtin-status">checking…</span>
+          <button id="check-builtin" style="padding:3px 10px; margin-left:8px;">Re-check</button>
+          <button id="download-model" style="padding:3px 10px; margin-left:4px;">Download model</button>
+        </div>
+        <div class="hint" id="download-hint">Both options are free and fully local — nothing ever leaves your browser.
+          The Gemini Nano model (a few GB) downloads once, on click — Chrome requires a user gesture to start it.</div>
+      </div>
+      <div class="field inline">
+        <input type="checkbox" id="heuristicPrefilter" />
+        <label class="lbl" for="heuristicPrefilter" style="margin:0">Use heuristics as a pre-filter (skip the model on obvious cases — faster &amp; cheaper)</label>
+      </div>
+      <div class="field">
+        <label class="lbl" for="sensitivity">Sensitivity: <span id="sensitivity-val"></span></label>
+        <input type="range" id="sensitivity" min="0" max="1" step="0.05" />
+        <div class="hint">Higher = only the most obvious spam is flagged. Lower = flags more aggressively.</div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Repeat offenders &amp; lists</legend>
+      <div class="field">
+        <label class="lbl" for="offenderStrikeThreshold">Auto-flag a person after this many strikes</label>
+        <input type="number" id="offenderStrikeThreshold" min="1" max="50" />
+      </div>
+      <div class="field">
+        <label class="lbl" for="allowlist">Allowlist — never flag these (one name or profile-URL fragment per line)</label>
+        <textarea id="allowlist" placeholder="Jane Doe&#10;/in/trusted-colleague"></textarea>
+      </div>
+      <div class="field">
+        <label class="lbl" for="blocklist">Blocklist — always flag these (one per line)</label>
+        <textarea id="blocklist" placeholder="Spammy McSpam&#10;/in/known-bot"></textarea>
+      </div>
+    </fieldset>
+
+    <div class="inline">
+      <button class="primary" id="save">Save settings</button>
+      <span class="saved" id="saved">Saved ✓</span>
+      <span style="flex:1"></span>
+      <button class="danger" id="reset">Reset data (keep settings)</button>
+    </div>
+
+    <fieldset style="margin-top:24px">
+      <legend>Recent activity (audit log)</legend>
+      <table>
+        <thead><tr><th>When</th><th>Author</th><th>Comment</th><th>Action</th></tr></thead>
+        <tbody id="audit"></tbody>
+      </table>
+    </fieldset>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

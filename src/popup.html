@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Comment Guard</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #1f2328;
+        --muted: #6b7280;
+        --line: #e5e7eb;
+        --blue: #0a66c2;
+        --green: #137333;
+        --red: #b91c1c;
+      }
+      * { box-sizing: border-box; }
+      body {
+        width: 340px;
+        margin: 0;
+        font-family: -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: var(--fg);
+        background: var(--bg);
+        font-size: 13px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+      }
+      header img { width: 24px; height: 24px; }
+      header h1 { font-size: 14px; margin: 0; flex: 1; }
+      .switch { position: relative; display: inline-block; width: 38px; height: 22px; }
+      .switch input { display: none; }
+      .slider {
+        position: absolute; inset: 0; cursor: pointer; background: #cbd5e1;
+        border-radius: 999px; transition: 0.15s;
+      }
+      .slider::before {
+        content: ""; position: absolute; height: 16px; width: 16px; left: 3px; top: 3px;
+        background: #fff; border-radius: 50%; transition: 0.15s;
+      }
+      input:checked + .slider { background: var(--green); }
+      input:checked + .slider::before { transform: translateX(16px); }
+      .section { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+      .stats { display: flex; gap: 8px; }
+      .stat {
+        flex: 1; text-align: center; padding: 8px 4px; border: 1px solid var(--line);
+        border-radius: 8px; background: #f9fafb;
+      }
+      .stat b { display: block; font-size: 18px; }
+      .stat span { color: var(--muted); font-size: 11px; }
+      .label { font-weight: 600; margin-bottom: 6px; display: block; }
+      .seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+      .seg button {
+        flex: 1; border: 0; background: #fff; padding: 7px 0; cursor: pointer; font-size: 12px;
+        color: var(--muted);
+      }
+      .seg button.active { background: var(--blue); color: #fff; font-weight: 600; }
+      .row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+      .muted { color: var(--muted); }
+      .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #3730a3; }
+      .pill.warn { background: #fef3c7; color: #92400e; }
+      .pill.bad { background: #fee2e2; color: #991b1b; }
+      .pill.ok { background: #dcfce7; color: #166534; }
+      button.action {
+        width: 100%; padding: 9px; border: 0; border-radius: 8px; background: var(--blue);
+        color: #fff; font-weight: 600; cursor: pointer; font-size: 13px;
+      }
+      button.action:hover { background: #08518f; }
+      ul.offenders { list-style: none; margin: 8px 0 0; padding: 0; max-height: 120px; overflow: auto; }
+      ul.offenders li { display: flex; justify-content: space-between; padding: 4px 0; border-top: 1px dashed var(--line); }
+      a.foot { display: block; text-align: center; padding: 10px; color: var(--blue); text-decoration: none; font-weight: 600; }
+      a.foot:hover { text-decoration: underline; }
+      .hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img src="../icons/icon48.png" alt="" />
+      <h1>Comment Guard</h1>
+      <label class="switch" title="Enable/disable">
+        <input type="checkbox" id="enabled" />
+        <span class="slider"></span>
+      </label>
+    </header>
+
+    <div class="section">
+      <div class="stats">
+        <div class="stat"><b id="st-scanned">0</b><span>scanned</span></div>
+        <div class="stat"><b id="st-flagged">0</b><span>flagged</span></div>
+        <div class="stat"><b id="st-deleted">0</b><span>deleted</span></div>
+      </div>
+      <div class="hint">Today</div>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <span class="label" style="margin:0">Classifier</span>
+        <span class="pill" id="classifier-pill">…</span>
+      </div>
+      <div class="hint" id="classifier-hint"></div>
+    </div>
+
+    <div class="section">
+      <div class="hint">
+        Flagged comments get a ⚠ badge with a <b>Delete</b> button. LinkedIn only allows
+        deletion on a real click, so if its menu blocks the automated one, the badge spotlights
+        the comment's ••• button for a quick manual delete.
+      </div>
+    </div>
+
+    <div class="section">
+      <button class="action" id="scan-now">Scan this LinkedIn tab now</button>
+      <div class="hint" id="scan-msg"></div>
+    </div>
+
+    <div class="section">
+      <span class="label">Top repeat offenders</span>
+      <ul class="offenders" id="offenders"></ul>
+      <div class="hint" id="offenders-empty">None yet.</div>
+    </div>
+
+    <a class="foot" id="open-options" href="#">Settings →</a>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
