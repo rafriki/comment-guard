@@ -69,13 +69,13 @@ can read exactly what it does before pasting.
 Windows (PowerShell):
 
 ```powershell
-$d="$env:USERPROFILE\comment-guard"; iwr "https://github.com/USER/REPO/archive/refs/heads/main.zip" -OutFile "$env:TEMP\cg.zip"; Expand-Archive "$env:TEMP\cg.zip" $d -Force; ii (gci $d -Directory)[0].FullName; start chrome "chrome://extensions"
+$d="$env:USERPROFILE\comment-guard"; iwr "https://github.com/rafriki/comment-guard/archive/refs/heads/main.zip" -OutFile "$env:TEMP\cg.zip"; Expand-Archive "$env:TEMP\cg.zip" $d -Force; ii (gci $d -Directory)[0].FullName; start chrome "chrome://extensions"
 ```
 
 macOS (Terminal):
 
 ```bash
-cd ~ && curl -L "https://github.com/USER/REPO/archive/refs/heads/main.zip" -o cg.zip && unzip -oq cg.zip -d comment-guard && open comment-guard/* && open -a "Google Chrome" "chrome://extensions"
+cd ~ && curl -L "https://github.com/rafriki/comment-guard/archive/refs/heads/main.zip" -o cg.zip && unzip -oq cg.zip -d comment-guard && open comment-guard/* && open -a "Google Chrome" "chrome://extensions"
 ```
 
 **2 — Load it into Chrome.** On the extensions page that just opened:
@@ -84,10 +84,9 @@ cd ~ && curl -L "https://github.com/USER/REPO/archive/refs/heads/main.zip" -o cg
 2. Click **Load unpacked** and select the folder that just opened (the one containing `manifest.json`)
 3. Pin the extension and click its icon for the dashboard
 
-> Replace `USER/REPO` with this repo's path. **Keep the downloaded folder where it is** — Chrome
-> runs the extension from that path. To update later, re-run the line and click ↻ on the extension
-> card. Chrome will also show a "developer mode extensions" warning periodically — that's expected
-> for an unpacked extension.
+> **Keep the downloaded folder where it is** — Chrome runs the extension from that path. To update
+> later, re-run the line and click ↻ on the extension card. Chrome will also show a "developer mode
+> extensions" warning periodically — that's expected for an unpacked extension.
 
 ### Manual install (no terminal)
 
